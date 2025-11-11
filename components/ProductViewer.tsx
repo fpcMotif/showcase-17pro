@@ -1,17 +1,13 @@
-
 import React, { useState } from 'react';
+import { Color } from '../App';
 
-type Color = 'Orange' | 'Blue' | 'Silver';
+interface ProductViewerProps {
+    colors: { name: Color; label: string; bg: string; image: string }[];
+    activeColor: Color;
+    setActiveColor: (color: Color) => void;
+}
 
-const colors: { name: Color; label: string; bg: string; image: string }[] = [
-    { name: 'Orange', label: 'Cosmic Orange', bg: 'bg-[#ff8b3d]', image: 'https://www.apple.com/v/iphone-17-pro/d/images/overview/product-viewer/colors_orange__f2ug4x6ry8uq_large.jpg'},
-    { name: 'Blue', label: 'Deep Blue', bg: 'bg-[#1e2c4c]', image: 'https://www.apple.com/v/iphone-17-pro/d/images/overview/product-viewer/colors_blue__ct0n7mo30vwy_large.jpg' },
-    { name: 'Silver', label: 'Silver', bg: 'bg-[#e3e4e6]', image: 'https://www.apple.com/v/iphone-17-pro/d/images/overview/product-viewer/colors_silver__52ec2bh9xaqe_large.jpg' }
-];
-
-const ProductViewer: React.FC = () => {
-    const [activeColor, setActiveColor] = useState<Color>('Orange');
-
+const ProductViewer: React.FC<ProductViewerProps> = ({ colors, activeColor, setActiveColor }) => {
     const activeImage = colors.find(c => c.name === activeColor)?.image;
 
     return (

@@ -1,5 +1,28 @@
-
 import React from 'react';
+import { motion } from 'framer-motion';
+
+const gridContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.2,
+        },
+    },
+};
+
+const gridItemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.5,
+            ease: 'easeOut',
+        },
+    },
+};
+
 
 const PerformanceSection: React.FC = () => {
     return (
@@ -25,20 +48,26 @@ const PerformanceSection: React.FC = () => {
                     ></video>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 text-left">
-                    <div>
+                <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 text-left"
+                    variants={gridContainerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                >
+                    <motion.div variants={gridItemVariants}>
                         <h3 className="text-xl font-semibold mb-2 text-white">A19 Pro chip</h3>
                         <p className="text-gray-400">The Apple silicon powering iPhone 17 Pro delivers the highest iPhone performance ever.</p>
-                    </div>
-                     <div>
+                    </motion.div>
+                     <motion.div variants={gridItemVariants}>
                         <h3 className="text-xl font-semibold mb-2 text-white">Graphics and speed</h3>
                         <p className="text-gray-400">The GPU and CPU deliver up to <strong className="text-white">40 percent better</strong> sustained performance.</p>
-                    </div>
-                     <div>
+                    </motion.div>
+                     <motion.div variants={gridItemVariants}>
                         <h3 className="text-xl font-semibold mb-2 text-white">Neural Accelerators</h3>
                         <p className="text-gray-400">More powerful than ever when working with local AI models.</p>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
 
                 <div className="relative rounded-3xl overflow-hidden">
                     <img src="https://www.apple.com/v/iphone-17-pro/d/images/overview/performance/battery/battery__fc7m9oxxh7yy_large.jpg" alt="Battery life demonstration" className="w-full h-full object-cover"/>
