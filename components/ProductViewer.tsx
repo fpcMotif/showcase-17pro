@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+
+import React from 'react';
+import { motion } from 'framer-motion';
 import { Color } from '../App';
 
 interface ProductViewerProps {
@@ -8,30 +10,53 @@ interface ProductViewerProps {
 }
 
 const ProductViewer: React.FC<ProductViewerProps> = ({ colors, activeColor, setActiveColor }) => {
-    const activeImage = colors.find(c => c.name === activeColor)?.image;
-
     return (
-        <section className="bg-black py-20 px-4">
+        <section id="product-viewer" className="bg-black py-20 px-4">
             <div className="max-w-screen-xl mx-auto text-center">
-                <header className="mb-12">
-                    <h3 className="text-5xl md:text-6xl font-bold">Take a closer look.</h3>
-                </header>
-                <div className="relative aspect-video">
-                     <img src={activeImage} alt={`iPhone 17 Pro in ${activeColor}`} className="w-full h-full object-contain" />
+                <motion.h2
+                    className="text-5xl md:text-7xl font-bold mb-8"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.6 }}
+                >
+                    Pro. Beyond powerful.
+                </motion.h2>
+
+                <div className="relative h-[75vh] mb-12">
+                    {colors.map(color => (
+                        <motion.img
+                            key={color.name}
+                            src={color.image}
+                            alt={`iPhone 17 Pro in ${color.label}`}
+                            className="absolute inset-0 w-full h-full object-contain"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{
+                                opacity: activeColor === color.name ? 1 : 0,
+                                scale: activeColor === color.name ? 1 : 0.95,
+                            }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                            style={{ zIndex: activeColor === color.name ? 10 : 1 }}
+                        />
+                    ))}
                 </div>
-                <div className="flex justify-center items-center mt-8 space-x-4">
-                    <div className="flex items-center space-x-2 bg-zinc-800 p-2 rounded-full">
-                         {colors.map(color => (
-                            <button
-                                key={color.name}
-                                onClick={() => setActiveColor(color.name)}
-                                className={`w-8 h-8 rounded-full transition-all duration-300 ${color.bg} ${activeColor === color.name ? 'ring-2 ring-white ring-offset-2 ring-offset-zinc-800' : ''}`}
-                                aria-label={`Select ${color.label} color`}
-                            >
-                            </button>
+
+                <div className="flex flex-col items-center">
+                     <p className="mb-4 text-gray-400">
+                        Available in Cosmic Orange, Deep Blue, and Silver.
+                    </p>
+                    <div className="flex items-center space-x-4">
+                        {colors.map(color => (
+                            <div key={color.name} className="flex flex-col items-center space-y-2">
+                                <button
+                                    onClick={() => setActiveColor(color.name)}
+                                    className={`w-8 h-8 rounded-full transition-all duration-300 ring-2 ring-offset-4 ring-offset-black ${color.bg} ${activeColor === color.name ? 'ring-white' : 'ring-transparent'}`}
+                                    aria-label={`Select ${color.label} color`}
+                                />
+                                <span className={`text-xs transition-colors ${activeColor === color.name ? 'text-white' : 'text-gray-500'}`}>{color.label}</span>
+                            </div>
                         ))}
                     </div>
-                     <span className="text-sm text-gray-300">{colors.find(c => c.name === activeColor)?.label}</span>
                 </div>
             </div>
         </section>

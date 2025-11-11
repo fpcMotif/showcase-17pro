@@ -1,5 +1,6 @@
 import React from 'react';
-import { Color, colors } from '../App';
+import { Color } from '../App';
+import { motion } from 'framer-motion';
 
 interface LocalNavProps {
     colors: { name: Color; label: string; bg: string; image: string }[];
@@ -15,22 +16,39 @@ const LocalNav: React.FC<LocalNavProps> = ({ colors, activeColor, setActiveColor
                     <a href="#" className="text-xl font-semibold text-white">
                         iPhone 17 Pro
                     </a>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center gap-x-6">
                         <a href="#highlights" className="hidden md:block text-xs text-gray-300 hover:text-white transition-colors">Highlights</a>
                         <a href="#design" className="hidden md:block text-xs text-gray-300 hover:text-white transition-colors">Design</a>
                         <a href="#cameras" className="hidden md:block text-xs text-gray-300 hover:text-white transition-colors">Cameras</a>
                         <a href="#performance" className="hidden md:block text-xs text-gray-300 hover:text-white transition-colors">Performance</a>
-                        <div className="hidden md:flex items-center space-x-2">
+                        <div className="hidden md:flex items-center gap-x-3 pl-2">
                            {colors.map(color => (
-                            <button
-                                key={color.name}
-                                onClick={() => setActiveColor(color.name)}
-                                className={`w-4 h-4 rounded-full transition-all duration-300 ${color.bg} ${activeColor === color.name ? 'ring-2 ring-white/80 ring-offset-2 ring-offset-black' : ''}`}
-                                aria-label={`Select ${color.label} color`}
-                            />
+                            <div key={color.name} className="relative w-4 h-4 flex items-center justify-center">
+                                <button
+                                    onClick={() => setActiveColor(color.name)}
+                                    className={`w-full h-full rounded-full transition-all duration-300 ${color.bg}`}
+                                    aria-label={`Select ${color.label} color`}
+                                />
+                                {activeColor === color.name && (
+                                     <motion.div
+                                        className="absolute inset-0 rounded-full border-2 border-white/80"
+                                        aria-hidden="true"
+                                        animate={{
+                                            scale: [1.2, 1.4, 1.2],
+                                            opacity: [0.7, 1, 0.7],
+                                        }}
+                                        transition={{
+                                            duration: 1.5,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                        }}
+                                        style={{ pointerEvents: 'none' }}
+                                    />
+                                )}
+                            </div>
                         ))}
                         </div>
-                        <a href="#" className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-blue-500 transition-colors">
+                        <a href="https://www.apple.com/us/shop/goto/buy_iphone/iphone_17_pro" className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-blue-500 transition-colors">
                             Buy
                         </a>
                     </div>
