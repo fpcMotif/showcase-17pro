@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 const HeroSection: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
   const [showControls, setShowControls] = useState(false);
+  const [hoverPosition, setHoverPosition] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -20,7 +23,6 @@ const HeroSection: React.FC = () => {
     const handleScroll = () => {
       if (videoRef.current) {
         const scrollY = window.scrollY;
-        // Apply parallax effect: move video up at half the scroll speed
         videoRef.current.style.transform = `translateY(${scrollY * 0.5}px)`;
       }
     };
@@ -32,6 +34,12 @@ const HeroSection: React.FC = () => {
     };
   }, []);
 
+  const formatTime = (timeInSeconds: number) => {
+    if (isNaN(timeInSeconds)) return "00:00";
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -51,6 +59,12 @@ const HeroSection: React.FC = () => {
       videoRef.current.currentTime = scrubPosition * videoRef.current.duration;
       setProgress(scrubPosition);
     }
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const scrubbableArea = e.currentTarget;
+    const hoverPos = e.nativeEvent.offsetX / scrubbableArea.offsetWidth;
+    setHoverPosition(hoverPos < 0 ? 0 : hoverPos > 1 ? 1 : hoverPos);
   };
 
   return (
@@ -81,7 +95,13 @@ const HeroSection: React.FC = () => {
         style={{ pointerEvents: showControls ? 'auto' : 'none' }}
       >
         <div className="bg-black/50 backdrop-blur-md rounded-full p-2 flex items-center space-x-3">
-           <button onClick={togglePlay} className="text-white focus:outline-none p-1" aria-label={isPlaying ? "Pause video" : "Play video"}>
+           <motion.button 
+              onClick={togglePlay} 
+              className="text-white focus:outline-none p-1" 
+              aria-label={isPlaying ? "Pause video" : "Play video"}
+              whileHover={{ scale: 1.15 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
             {isPlaying ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clipRule="evenodd" />
@@ -91,10 +111,37 @@ const HeroSection: React.FC = () => {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
             )}
-          </button>
-          <div className="relative flex-grow h-1.5 bg-white/20 rounded-full cursor-pointer group" onClick={handleScrub}>
-            <div className="absolute top-0 left-0 bg-white h-1.5 rounded-full" style={{ width: `${progress * 100}%` }}></div>
-            <div className="absolute top-1/2 -translate-y-1/2 h-3 w-3 bg-white rounded-full transition-transform group-hover:scale-110" style={{ left: `calc(${progress * 100}% - 6px)` }}></div>
+          </motion.button>
+          <div 
+            className="relative flex-grow h-1.5 bg-white/20 rounded-full cursor-pointer" 
+            onClick={handleScrub}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            {showTooltip && videoRef.current && (
+              <div 
+                className="absolute bottom-full mb-2 px-2 py-1 bg-black text-white text-xs rounded"
+                style={{ 
+                  left: `${hoverPosition * 100}%`,
+                  transform: 'translateX(-50%)',
+                  pointerEvents: 'none'
+                }}
+              >
+                {formatTime(hoverPosition * videoRef.current.duration)}
+              </div>
+            )}
+            <motion.div 
+              className="absolute top-0 left-0 bg-white h-1.5 rounded-full" 
+              animate={{ width: `${progress * 100}%` }}
+              transition={{ duration: 0.1, ease: "linear" }}
+            />
+            <motion.div 
+              className="absolute top-1/2 -translate-y-1/2 h-3 w-3 bg-white rounded-full" 
+              animate={{ left: `calc(${progress * 100}% - 6px)` }}
+              transition={{ duration: 0.1, ease: "linear" }}
+              whileHover={{ scale: 1.2 }}
+            />
           </div>
         </div>
       </div>

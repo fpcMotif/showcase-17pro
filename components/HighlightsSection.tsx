@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 const highlights = [
   {
@@ -23,22 +24,21 @@ const highlights = [
   },
 ];
 
-
 const HighlightsSection: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(true);
     const [progress, setProgress] = useState(0);
     const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+    const [hoverPosition, setHoverPosition] = useState(0);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
-        // Pause non-active videos, and handle the active one
         videoRefs.current.forEach((video, index) => {
             if (video) {
                 if (index === activeIndex) {
-                    // Reset and play if isPlaying is true
                     video.currentTime = 0;
                     if (isPlaying) {
-                        video.play().catch(() => setIsPlaying(false)); // Handle autoplay block
+                        video.play().catch(() => setIsPlaying(false));
                     }
                 } else {
                     video.pause();
@@ -80,6 +80,13 @@ const HighlightsSection: React.FC = () => {
         }
     }, [activeIndex]);
 
+    const formatTime = (timeInSeconds: number) => {
+        if (isNaN(timeInSeconds)) return "00:00";
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = Math.floor(timeInSeconds % 60);
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
     const handleScrub = (e: React.MouseEvent<HTMLDivElement>) => {
         const activeVideo = videoRefs.current[activeIndex];
         const scrubbableArea = e.currentTarget;
@@ -87,6 +94,12 @@ const HighlightsSection: React.FC = () => {
             const scrubPosition = e.nativeEvent.offsetX / scrubbableArea.offsetWidth;
             activeVideo.currentTime = scrubPosition * activeVideo.duration;
         }
+    };
+    
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const scrubbableArea = e.currentTarget;
+        const hoverPos = e.nativeEvent.offsetX / scrubbableArea.offsetWidth;
+        setHoverPosition(hoverPos < 0 ? 0 : hoverPos > 1 ? 1 : hoverPos);
     };
 
     const handleDotClick = (index: number) => {
@@ -109,8 +122,7 @@ const HighlightsSection: React.FC = () => {
                     {highlights.map((highlight, index) => (
                          <div key={index} className={`absolute inset-0 transition-opacity duration-500 ${index === activeIndex ? 'opacity-100 z-10' : 'opacity-0'}`}>
                             <video
-                                // FIX: The ref callback function should not return a value. Using a block body ensures it returns void.
-                                ref={el => { videoRefs.current[index] = el; }}
+                                ref={(el: HTMLVideoElement | null) => { videoRefs.current[index] = el; }}
                                 className="w-full h-full object-cover"
                                 playsInline
                                 muted
@@ -124,7 +136,13 @@ const HighlightsSection: React.FC = () => {
                     ))}
                 </div>
                 <div className="flex justify-center items-center mt-6 space-x-3 w-full max-w-lg mx-auto">
-                    <button onClick={() => setIsPlaying(!isPlaying)} className="mr-4 text-white" aria-label={isPlaying ? "Pause" : "Play"}>
+                    <motion.button 
+                        onClick={() => setIsPlaying(!isPlaying)} 
+                        className="mr-4 text-white" 
+                        aria-label={isPlaying ? "Pause" : "Play"}
+                        whileHover={{ scale: 1.15 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    >
                         {isPlaying ? (
                              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56">
                                 <path d="m21.7334 36.67h2.5342c1.1483 0 1.7324-.5796 1.7324-1.7193v-13.9015c0-1.12-.5841-1.6898-1.7324-1.7193h-2.5342c-1.1483 0-1.7324.5698-1.7324 1.7193v13.9015c-.0297 1.1396.5544 1.7193 1.7324 1.7193zm9.9992 0h2.5347c1.1485 0 1.7327-.5796 1.7327-1.7193v-13.9015c0-1.12-.5842-1.7193-1.7327-1.7193h-2.5347c-1.1485 0-1.7327.5698-1.7327 1.7193v13.9015c0 1.1396.5545 1.7193 1.7327 1.7193z" fill="currentColor"></path>
@@ -134,15 +152,42 @@ const HighlightsSection: React.FC = () => {
                                 <path d="m23.7555 36.6237c.4478 0 .8598-.1343 1.4241-.4568l10.9178-6.3322c.8598-.5016 1.3614-1.021 1.3614-1.8361 0-.8061-.5016-1.3255-1.3614-1.8271l-10.9178-6.3322c-.5643-.3314-.9762-.4657-1.4241-.4657-.9315 0-1.7555.7165-1.7555 1.9435v13.3629c0 1.227.824 1.9435 1.7555 1.9435z" fill="currentColor"></path>
                             </svg>
                         )}
-                    </button>
+                    </motion.button>
                     <div className="flex items-center space-x-3">
                         {highlights.map((_, index) => (
                             <button key={index} onClick={() => handleDotClick(index)} className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === index ? 'bg-white scale-125' : 'bg-gray-500'}`} aria-label={`Go to slide ${index + 1}: ${highlights[index].label}`}></button>
                         ))}
                     </div>
-                    <div className="relative flex-grow h-1 bg-white/20 rounded-full cursor-pointer ml-4 group" onClick={handleScrub}>
-                        <div className="absolute top-0 left-0 bg-white h-1 rounded-full" style={{ width: `${progress * 100}%` }}></div>
-                         <div className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 bg-white rounded-full transition-transform group-hover:scale-110" style={{ left: `calc(${progress * 100}% - 5px)` }}></div>
+                    <div 
+                        className="relative flex-grow h-1 bg-white/20 rounded-full cursor-pointer ml-4" 
+                        onClick={handleScrub}
+                        onMouseMove={handleMouseMove}
+                        onMouseEnter={() => setShowTooltip(true)}
+                        onMouseLeave={() => setShowTooltip(false)}
+                    >
+                        {showTooltip && videoRefs.current[activeIndex] && (
+                          <div 
+                            className="absolute bottom-full mb-2 px-2 py-1 bg-zinc-700 text-white text-xs rounded"
+                            style={{ 
+                              left: `${hoverPosition * 100}%`,
+                              transform: 'translateX(-50%)',
+                              pointerEvents: 'none'
+                            }}
+                          >
+                            {formatTime(hoverPosition * videoRefs.current[activeIndex]!.duration)}
+                          </div>
+                        )}
+                        <motion.div 
+                            className="absolute top-0 left-0 bg-white h-1 rounded-full" 
+                            animate={{ width: `${progress * 100}%` }}
+                             transition={{ duration: 0.1, ease: "linear" }}
+                        />
+                         <motion.div 
+                            className="absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 bg-white rounded-full" 
+                             animate={{ left: `calc(${progress * 100}% - 5px)` }}
+                             transition={{ duration: 0.1, ease: "linear" }}
+                             whileHover={{ scale: 1.2 }}
+                        />
                     </div>
                 </div>
             </div>
