@@ -1,0 +1,147 @@
+/* eslint-disable at-rule-no-unknown */
+@import "tailwindcss";
+
+/* Tailwind CSS v4 specific at-rules - linter warnings expected */
+/* eslint-disable-next-line at-rule-no-unknown */
+@theme {
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  
+  /* Apple-like Color Palette using OKLCH and HSL */
+  --color-apple-black: oklch(0 0 0);
+  --color-apple-dark: oklch(0.12 0.01 264);
+  --color-apple-gray-900: oklch(0.12 0.01 264);
+  --color-apple-gray-700: oklch(0.25 0.01 264);
+  --color-apple-gray-500: oklch(0.55 0.01 264);
+  --color-apple-gray-400: oklch(0.65 0.01 264);
+  --color-apple-white: oklch(1 0 0);
+  --color-apple-blue: oklch(0.55 0.18 238);
+  --color-apple-blue-hover: oklch(0.45 0.20 238);
+  
+  /* Spacing Scale */
+  --spacing: 0.25rem; /* 4px base */
+  --spacing-1: 0.25rem; /* 4px */
+  --spacing-2: 0.5rem;  /* 8px */
+  --spacing-3: 0.75rem; /* 12px */
+  --spacing-4: 1rem;    /* 16px */
+  --spacing-8: 2rem;    /* 32px */
+  --spacing-10: 2.5rem; /* 40px */
+  
+  /* Text Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  
+  /* Transition Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  
+  /* Custom Breakpoints */
+  --breakpoint-xs: 475px;
+  --breakpoint-3xl: 1600px;
+  
+  /* Custom Shadows */
+  --shadow-apple: 0 4px 16px 0 oklch(0 0 0 / 0.12);
+  --shadow-apple-lg: 0 8px 32px 0 oklch(0 0 0 / 0.16);
+  
+  /* Custom Animations */
+  --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+  
+  /* Border Radius */
+  --radius-apple: 12px;
+  --radius-apple-lg: 16px;
+}
+
+/* Custom Components using @apply - Tailwind v4 syntax */
+@layer components {
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .btn-primary {
+    @apply bg-apple-blue hover:bg-apple-blue-hover text-white px-6 py-3 rounded-apple font-medium transition-colors ease-apple;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .text-secondary {
+    @apply text-apple-gray-400;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .bg-apple-section {
+    @apply bg-apple-dark;
+  }
+  
+  /* Footer specific components */
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-container {
+    @apply bg-apple-dark text-apple-white text-xs py-10 px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-section {
+    @apply border-b border-apple-gray-700 pb-8 mb-8;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-grid {
+    @apply grid grid-cols-2 md:grid-cols-5 gap-8;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-title {
+    @apply font-semibold text-apple-white mb-3;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-link-list {
+    @apply space-y-2;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-link {
+    @apply text-apple-blue hover:text-apple-blue-hover transition-colors duration-200 ease-apple;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-bottom {
+    @apply border-t border-apple-gray-700 mt-8 pt-6;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-bottom-text {
+    @apply mb-4;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-legal-links {
+    @apply flex space-x-4 mt-4 md:mt-0;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-legal-link {
+    @apply hover:underline transition-colors ease-apple;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-country {
+    @apply mt-4 md:mt-0 hover:underline transition-colors ease-apple;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-copyright {
+    @apply flex flex-col md:flex-row justify-between items-center text-apple-gray-500;
+  }
+  
+  /* eslint-disable-next-line at-rule-no-unknown */
+  .footer-link-spacing {
+    @apply ml-1;
+  }
+}
+
+/* Custom utilities - Tailwind v4 syntax */
+/* eslint-disable-next-line at-rule-no-unknown */
+@utility apple-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
